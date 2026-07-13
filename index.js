@@ -13,6 +13,7 @@ export const getImportCount = latestModule.getImportCount;
 export const isImportPresent = latestModule.isImportPresent;
 export const getImportStartLine = latestModule.getImportStartLine;
 export const getImportEndLine = latestModule.getImportEndLine;
+export const getImportVariables = latestModule.getImportVariables;
 export const version = v;
 
 export default load;
