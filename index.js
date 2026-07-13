@@ -2,10 +2,10 @@ import getLatestVersion from "./bin/core/getLatestVersion.js";
 
 const v = getLatestVersion();
 const latestModule = await import(`./bin/${v}/index.js`);
+const startModule = await import(`./bin/${v}/start.js`);
 
-const load = async ({ jsFilePath, inCheckLines, showLog }) => {
-    const module = await import(`./bin/${v}/start.js`);
-    await module.default({ jsFilePath, inCheckLines, showLog });
+const load = ({ jsFilePath, inCheckLines, showLog }) => {
+    return startModule.default({ jsFilePath, inCheckLines, showLog });
 };
 
 export const getAllImports = latestModule.getAllImports;
