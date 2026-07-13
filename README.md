@@ -1,115 +1,123 @@
-# express-fix-any-js 🚀
+# express-check-any-for-import 🔍
 
-> **Instantly repair, structure, and align Express.js routing files with automated idempotency & formatting safeguards.**
+> **A high-performance ESM import analyzer that parses, inspects, and extracts details about JavaScript import statements and variables.**
 
-[![npm version](https://img.shields.io/npm/v/express-fix-any-js.svg?style=flat-square&color=38bdf8)](https://www.npmjs.com/package/express-fix-any-js)
-[![license](https://img.shields.io/npm/l/express-fix-any-js.svg?style=flat-square&color=34d399)](LICENSE)
-[![GitHub workflows](https://img.shields.io/github/actions/workflow/status/keshavsoft/express-fix-any-js/npm-publish.yml?style=flat-square&label=workflows)](https://github.com/keshavsoft/express-fix-any-js/actions)
+[![npm version](https://img.shields.io/npm/v/express-check-any-for-import.svg?style=flat-square&color=38bdf8)](https://www.npmjs.com/package/express-check-any-for-import)
+[![license](https://img.shields.io/npm/l/express-check-any-for-import.svg?style=flat-square&color=34d399)](LICENSE)
 
 ---
 
 ## 📖 Overview
 
-`express-fix-any-js` is a lightweight, high-performance JS AST and file modifier utility. It automatically injects missing Express.js route declarations, import statements, and export configurations into your JavaScript files while ensuring complete protection against code duplication.
+`express-check-any-for-import` is a lightweight library designed to analyze JavaScript files for ES Module (`import`) statements. It helps you check if imports are present, count them, get their line numbers (start/end), and extract imported variable names (with aliases and default imports correctly resolved).
 
-This module acts as the foundation layer for the **KeshavSoft API Generation Suite**, dynamically structuring routes generated via CLI or VS Code extensions.
+It is used as a foundation layer to inspect references and track variables inside source code.
 
 ---
 
 ## ✨ Features
 
-*   **🔒 Duplicate Prevention (Idempotency)**: Checks files before altering them. If a route or pattern already exists, it skips execution silently to avoid code corruption.
-*   **📐 Strict Route Formatting**:
-    *   Inserts clean line spaces after `express.Router()` initialization.
-    *   Maintains zero-line spacing between consecutive route definitions.
-    *   Appends spacing cleanly before the `export` keyword.
-*   **⚡ Multiple File Versions (V1 - V6)**: Supports legacy configuration modifications alongside cutting-edge AST-based insertions.
-*   **🛠️ Developer-First Diagnostics**: Provides clear inline logging of file updates and duplicate line match warnings.
+*   **📦 Broad Import Style Support**: Handles default imports, namespace imports (`* as name`), named imports with aliases (`{ router as apiRouter }`), mixed imports, and multi-line imports.
+*   **💬 Comment Stripping**: Cleans block (`/* */`) and line (`//`) comments inside imports before parsing to ensure robust variable extraction.
+*   **📊 Line Metrics**: Computes precise 1-indexed start and end lines for import statements.
+*   **⚡ Zero Dependencies**: Extremely fast and lightweight.
 
 ---
 
-## 📁 Repository Integration Map
-
-`express-fix-any-js` is part of a larger cascading developer ecosystem:
-
-```mermaid
-graph TD
-    ext["vs-code-ext-express-api-gen-get-actions<br/><i>VS Code Extension</i>"]
-    
-    gen["kschema-fs-api-gen-get-actions<br/><i>API Generator Actions</i>"]
-    
-    endpoints["express-fix-endpoints-get-js<br/><i>Endpoint Logic Builder</i>"]
-    
-    anyjs["express-fix-any-js<br/><i>This Core Utility</i>"]
-
-    ext -->|delegates to| gen
-    gen -->|invokes| endpoints
-    endpoints -->|relies on| anyjs
-```
-
----
-
-## 🚀 Quick Start
-
-### Installation
+## 🚀 Installation
 
 ```bash
-npm install express-fix-any-js
-```
-
-### Programmatic Usage
-
-You can use the core `alterFile` function to modify local routes files safely:
-
-```javascript
-import alterFile from 'express-fix-any-js/bin/v6/UpdateJs/common/AlterFile/index.js';
-
-alterFile({
-  jsFilePath: './routes/end-points.js',
-  toInsertLine: 'router.post("/Create", express.json(), CreateFunc);',
-  duplicationCheck: 'router.post("/Create"',
-  insertAfter: [
-    'const router = express.Router();',
-    'router.post("/Alter"' // Inserts immediately after this line if found, otherwise after Router init
-  ],
-  showLog: true
-});
+npm install express-check-any-for-import
 ```
 
 ---
 
-## 📜 Structuring Rules
+## 🛠️ API Reference
 
-The utility operates under strict structural rules to preserve route aesthetics:
-
-### 1. First Route Placement
-When the first route is inserted into an empty routing structure, the file is formatted with breathing space:
-
+### `getAllImports(fileContent)`
+Returns an array of all raw import statement strings found in the file.
 ```javascript
-const router = express.Router();
-
-router.post("/Alter", express.json(), handler);
-
-export { router };
+import { getAllImports } from 'express-check-any-for-import';
+const imports = getAllImports(code);
+// ['import express from "express";', ...]
 ```
 
-### 2. Multi-Route Appending
-Subsequent routes are appended directly after the last matching route with no empty line spacing between them:
-
+### `getImportCount(fileContent)`
+Returns the total count of import statements in the file.
 ```javascript
-router.post("/Alter", express.json(), handler);
-router.post("/Alter1", express.json(), handler);
-router.post("/Alter2", express.json(), handler);
+import { getImportCount } from 'express-check-any-for-import';
+const count = getImportCount(code); // 6
+```
+
+### `isImportPresent(fileContent, sourceName)`
+Checks whether a specific import source path (like `'express'` or `'dotenv'`) is present.
+```javascript
+import { isImportPresent } from 'express-check-any-for-import';
+const hasExpress = isImportPresent(code, 'express'); // true
+```
+
+### `getImportStartLine(fileContent, sourceName)`
+Calculates the 1-indexed start line of the import statement matching `sourceName`. Returns `-1` if not found.
+```javascript
+import { getImportStartLine } from 'express-check-any-for-import';
+const line = getImportStartLine(code, 'dotenv'); // 2
+```
+
+### `getImportEndLine(fileContent, sourceName)`
+Calculates the 1-indexed end line of the import statement matching `sourceName` (handles multi-line statements).
+```javascript
+import { getImportEndLine } from 'express-check-any-for-import';
+const line = getImportEndLine(code, 'some-library'); // 18
+```
+
+### `getImportVariables(fileContent)`
+Extracts a flat, unique list of all variables declared in the imports. Resolves default imports, aliases, and namespace imports.
+```javascript
+import { getImportVariables } from 'express-check-any-for-import';
+const variables = getImportVariables(code);
+// ['exec', 'dotenv', 'express', 'routerFromapi']
+```
+
+### `getImportVariablesDetails(fileContent)`
+Returns the total lines of the file, alongside the list of variables with their precise line spans (`startLine`, `endLine`).
+```javascript
+import { getImportVariablesDetails } from 'express-check-any-for-import';
+const details = getImportVariablesDetails(code);
+/*
+{
+  totalLines: 23,
+  variables: [
+    { name: 'exec', startLine: 1, endLine: 1 },
+    { name: 'routerFromapi', startLine: 7, endLine: 7 }
+  ]
+}
+*/
 ```
 
 ---
 
-## 🛠️ Developer & API Reference
+## 📜 Example
 
-For detailed developer notes, architectural mappings, and code analyses:
-*   [Developer Docs Home](./docs/index.html)
-*   [Code Style & Readability Analysis](./docs/code_style_and_readability.md)
-*   [AlterFile Workflow Analysis](./docs/alter_file_analysis.md)
+Given the following code block:
+```javascript
+import { exec } from "child_process";
+import dotenv from 'dotenv'
+import express from "express";
+import { router as routerFromapi } from './api/routes.js';
+```
+
+Calling `getImportVariablesDetails` yields:
+```json
+{
+  "totalLines": 4,
+  "variables": [
+    { "name": "exec", "startLine": 1, "endLine": 1 },
+    { "name": "dotenv", "startLine": 2, "endLine": 2 },
+    { "name": "express", "startLine": 3, "endLine": 3 },
+    { "name": "routerFromapi", "startLine": 4, "endLine": 4 }
+  ]
+}
+```
 
 ---
 
