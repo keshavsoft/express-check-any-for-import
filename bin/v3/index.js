@@ -4,6 +4,7 @@ import { isImportPresent } from './isImportPresent.js';
 import { getImportStartLine } from './getImportStartLine.js';
 import { getImportEndLine } from './getImportEndLine.js';
 import { getImportVariables } from './getImportVariables.js';
+import { getImportVariablesDetails } from './getImportVariablesDetails.js';
 
 export {
     getAllImports,
@@ -11,6 +12,8 @@ export {
     isImportPresent,
     getImportStartLine,
     getImportEndLine,
-    getImportVariables
+    getImportVariables,
+    getImportVariablesDetails
 };
+
 
