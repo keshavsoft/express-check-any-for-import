@@ -1,6 +1,6 @@
 {
   "name": "express-check-any-for-import",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "CLI to build for appjs, the endpoints",
   "keywords": [
     "cli",
@@ -15,7 +15,7 @@
     ".": "./index.js"
   },
   "bin": {
-    "express-fix-any-js": "./bin/cli.js"
+    "express-check-any-for-import": "./bin/cli.js"
   },
   "files": [
     "bin/",
