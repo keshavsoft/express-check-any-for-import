@@ -1,6 +1,6 @@
 {
   "name": "express-check-any-for-import",
-  "version": "1.4.6",
+  "version": "1.4.7",
   "description": "CLI to build for appjs, the endpoints",
   "keywords": [
     "cli",

@@ -1,8 +1,11 @@
+import { createRequire } from "module";
 import getLatestVersion from "./bin/core/getLatestVersion.js";
 
+const require = createRequire(import.meta.url);
+
 const v = getLatestVersion();
-const latestModule = await import(`./bin/${v}/index.js`);
-const startModule = await import(`./bin/${v}/start.js`);
+const latestModule = require(`./bin/${v}/index.js`);
+const startModule = require(`./bin/${v}/start.js`);
 
 const load = ({ jsFilePath, inCheckLines, showLog }) => {
     return startModule.default({ jsFilePath, inCheckLines, showLog });
